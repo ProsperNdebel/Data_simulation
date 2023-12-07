@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Homepage</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>Insightify</h1>
+    </header>
+
+    <main>
+      <div class="card" onclick="fetchData('FX Trader')">
+        <div class="card-title">FX Trader</div>
+        <div class="card-content">Click to load data</div>
+        <div class="dropdown">
+          <div class="dropdown-item" onclick="handleDropdownClick('EURUSD')">
+            EUR/USD
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('GBPUSD')">
+            GBP/USD
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('USDJPY')">
+            USD/JPY
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('AUDUSD')">
+            AUD/USD
+          </div>
+          <!-- Add more forex pairs as needed -->
+          <div class="dropdown-item" onclick="handleDropdownClick('USDCAD')">
+            USD/CAD
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('EURGBP')">
+            EUR/GBP
+          </div>
+        </div>
+      </div>
+
+      <div class="card" onclick="fetchData('Weather')">
+        <div class="card-title">Weather</div>
+        <div class="card-content">Click to load data</div>
+        <div class="dropdown">
+          <div class="dropdown-item" onclick="handleDropdownClick('Sunny')">
+            Sunny
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Cloudy')">
+            Cloudy
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Rainy')">
+            Rainy
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Snowy')">
+            Snowy
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Windy')">
+            Windy
+          </div>
+          <div
+            class="dropdown-item"
+            onclick="handleDropdownClick('Thunderstorm')"
+          >
+            Thunderstorm
+          </div>
+        </div>
+      </div>
+
+      <div class="card" onclick="fetchData('Random Service')">
+        <div class="card-title">Random Service</div>
+        <div class="card-content">Click to load data</div>
+        <div class="dropdown">
+          <div
+            class="dropdown-item"
+            onclick="handleDropdownClick('Option Alpha')"
+          >
+            Option Alpha
+          </div>
+          <div
+            class="dropdown-item"
+            onclick="handleDropdownClick('Option Beta')"
+          >
+            Option Beta
+          </div>
+          <div
+            class="dropdown-item"
+            onclick="handleDropdownClick('Option Gamma')"
+          >
+            Option Gamma
+          </div>
+          <div
+            class="dropdown-item"
+            onclick="handleDropdownClick('Option Delta')"
+          >
+            Option Delta
+          </div>
+          <div
+            class="dropdown-item"
+            onclick="handleDropdownClick('Option Epsilon')"
+          >
+            Option Epsilon
+          </div>
+          <div
+            class="dropdown-item"
+            onclick="handleDropdownClick('Option Zeta')"
+          >
+            Option Zeta
+          </div>
+        </div>
+      </div>
+
+      <div class="card" onclick="fetchData('News Feed')">
+        <div class="card-title">News Feed</div>
+        <div class="card-content">Click to load data</div>
+        <div class="dropdown">
+          <div class="dropdown-item" onclick="handleDropdownClick('Option P')">
+            Option P
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Option Q')">
+            Option Q
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Option R')">
+            Option R
+          </div>
+        </div>
+      </div>
+
+      <div class="card" onclick="fetchData('Stock Market')">
+        <div class="card-title">Stock Market</div>
+        <div class="card-content">Click to load data</div>
+        <div class="dropdown">
+          <div class="dropdown-item" onclick="handleDropdownClick('Option M')">
+            Option M
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Option N')">
+            Option N
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Option O')">
+            Option O
+          </div>
+        </div>
+      </div>
+
+      <div class="card" onclick="fetchData('Travel Planner')">
+        <div class="card-title">Travel Planner</div>
+        <div class="card-content">Click to load data</div>
+        <div class="dropdown">
+          <div class="dropdown-item" onclick="handleDropdownClick('Option T')">
+            Option T
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Option U')">
+            Option U
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Option V')">
+            Option V
+          </div>
+        </div>
+      </div>
+      <div class="card" onclick="fetchData('FX Trader')">
+        <div class="card-title">FX Trader</div>
+        <div class="card-content">Click to load data</div>
+        <div class="dropdown">
+          <div class="dropdown-item" onclick="handleDropdownClick('Option 1')">
+            Option 1
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Option 2')">
+            Option 2
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Option 3')">
+            Option 3
+          </div>
+        </div>
+      </div>
+
+      <div class="card" onclick="fetchData('FX Trader')">
+        <div class="card-title">FX Trader</div>
+        <div class="card-content">Click to load data</div>
+        <div class="dropdown">
+          <div class="dropdown-item" onclick="handleDropdownClick('Option 1')">
+            Option 1
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Option 2')">
+            Option 2
+          </div>
+          <div class="dropdown-item" onclick="handleDropdownClick('Option 3')">
+            Option 3
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      async function fetchData(serviceName) {
+        try {
+          const response = await fetch(
+            "http://localhost:5000/call_python_function",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ apiInput: serviceName }),
+            }
+          );
+
+          const data = await response.json();
+          alert(`Result: ${JSON.stringify(data.result)}`);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+
+      function handleDropdownClick(option) {
+        alert("fetching data now...");
+        fetchData(option);
+      }
+    </script>
+  </body>
+</html>

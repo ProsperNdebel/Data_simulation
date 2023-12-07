@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from api_handler import fetch_forex_data
 
 app = Flask(__name__)
 
@@ -15,18 +16,8 @@ def home():
     Returns:
         str: Rendered HTML content for the main menu.
     """
-    # You can customize this data with the necessary information for your menu
-    menu_data = {
-        'menu_items': [
-            {'label': 'Plot Data', 'url': '/plot_data'},
-            {'label': 'Simulate Data', 'url': '/simulate_data'},
-            {'label': 'Pick Data Type', 'url': '/pick_data_type'},
-            # Add more menu items as needed
-        ],
-        'app_name': 'Data Simulation Project'
-    }
 
-    return render_template('menu.html', **menu_data)
+    return render_template('menu.html')
 
 
 # Sample/dummy data for demonstration purposes
@@ -49,7 +40,7 @@ def plot_data():
     """
     return render_template('plot_data.html', data=sample_data['data_for_plot'])
 
-# Define a route for simulating data
+# # Define a route for simulating data
 
 
 @app.route('/simulate_data')
@@ -66,7 +57,7 @@ def simulate_data():
     """
     return render_template('simulate_data.html', simulated_data=sample_data['simulated_data'])
 
-# Define a route for picking data types
+# # Define a route for picking data types
 
 
 @app.route('/pick_data_type')
@@ -78,6 +69,16 @@ def pick_data_type():
         str: Rendered HTML content for the data type picking page.
     """
     return render_template('pick_data_type.html', data_types=sample_data['available_data_types'])
+
+
+@app.route('/fetch_forex_data')
+def fetch_forex_data(api_key, base_currency, target_currency, start_date, end_date):
+    data = fetch_forex_data(api_key, base_currency,
+                            target_currency, start_date, end_date)
+
+    return []
+
+    # Now convert this data into something matplotlib can understand, plot, animate
 
 
 if __name__ == '__main__':
