@@ -9,6 +9,8 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
     />
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
     <header>
@@ -16,206 +18,1123 @@
     </header>
 
     <main>
-      <div class="card" onclick="fetchData('FX Trader')">
-        <div class="card-title">FX Trader</div>
-        <div class="card-content">Click to load data</div>
-        <div class="dropdown">
-          <div class="dropdown-item" onclick="handleDropdownClick('EURUSD')">
-            EUR/USD
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('GBPUSD')">
-            GBP/USD
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('USDJPY')">
-            USD/JPY
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('AUDUSD')">
-            AUD/USD
-          </div>
-          <!-- Add more forex pairs as needed -->
-          <div class="dropdown-item" onclick="handleDropdownClick('USDCAD')">
-            USD/CAD
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('EURGBP')">
-            EUR/GBP
-          </div>
+      <div id="chartContainer">
+        <canvas
+          id="myChart"
+          width="900"
+          ,
+          height="400"
+          style="background-color: antiquewhite"
+        ></canvas>
+      </div>
+
+      <div id="myModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal()">&times;</span>
+          <label for="currency">Select Currency:</label>
+          <select id="currency">
+            <option value="EURUSD">EUR/USD</option>
+            <option value="GBPUSD">GBP/USD</option>
+            <option value="USDJPY">USD/JPY</option>
+            <option value="AUDUSD">AUD/USD</option>
+            <option value="USDCAD">USD/CAD</option>
+            <option value="NZDUSD">NZD/USD</option>
+            <option value="USDCHF">USD/CHF</option>
+            <option value="EURGBP">EUR/GBP</option>
+            <option value="EURJPY">EUR/JPY</option>
+            <option value="GBPJPY">GBP/JPY</option>
+          </select>
+          <label for="startDate">Start Date:</label>
+          <input type="text" id="startDate" placeholder="YYYY-MM-DD" />
+          <label for="endDate">End Date:</label>
+          <input type="text" id="endDate" placeholder="YYYY-MM-DD" />
+          <label for="frame">Frame:</label>
+          <select id="frame">
+            <option value="hourly">Hourly</option>
+            <option value="daily">Daily</option>
+            <option value="monthly">Monthly</option>
+          </select>
+          <button onclick="submitForm()">Submit</button>
         </div>
       </div>
 
-      <div class="card" onclick="fetchData('Weather')">
-        <div class="card-title">Weather</div>
-        <div class="card-content">Click to load data</div>
-        <div class="dropdown">
-          <div class="dropdown-item" onclick="handleDropdownClick('Sunny')">
-            Sunny
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Cloudy')">
-            Cloudy
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Rainy')">
-            Rainy
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Snowy')">
-            Snowy
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Windy')">
-            Windy
-          </div>
-          <div
-            class="dropdown-item"
-            onclick="handleDropdownClick('Thunderstorm')"
+      <!-- popup for the weather -->
+      <!-- The pop-up overlay -->
+      <div id="popupOverlay" class="popup-overlay">
+        <!-- The pop-up dialog -->
+        <div id="weatherPopup" class="popup">
+          <span class="close-button" onclick="closeWeatherPopup()"
+            >&times;</span
           >
-            Thunderstorm
-          </div>
-        </div>
-      </div>
+          <div class="popup-content">
+            <h2>Weather Settings</h2>
+            <form id="weatherForm">
+              <!-- Weather elements checkboxes -->
+              <div>
+                <label
+                  ><input type="checkbox" name="weatherElement" value="Sunny" />
+                  Sunny</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="weatherElement"
+                    value="Cloudy"
+                  />
+                  Cloudy</label
+                >
+                <label
+                  ><input type="checkbox" name="weatherElement" value="Rainy" />
+                  Rainy</label
+                >
+                <label
+                  ><input type="checkbox" name="weatherElement" value="Snowy" />
+                  Snowy</label
+                >
+                <label
+                  ><input type="checkbox" name="weatherElement" value="Windy" />
+                  Windy</label
+                >
+                <label
+                  ><input
+                    type="checkbox"
+                    name="weatherElement"
+                    value="Thunderstorm"
+                  />
+                  Thunderstorm</label
+                >
+              </div>
 
-      <div class="card" onclick="fetchData('Random Service')">
-        <div class="card-title">Random Service</div>
-        <div class="card-content">Click to load data</div>
-        <div class="dropdown">
-          <div
-            class="dropdown-item"
-            onclick="handleDropdownClick('Option Alpha')"
-          >
-            Option Alpha
-          </div>
-          <div
-            class="dropdown-item"
-            onclick="handleDropdownClick('Option Beta')"
-          >
-            Option Beta
-          </div>
-          <div
-            class="dropdown-item"
-            onclick="handleDropdownClick('Option Gamma')"
-          >
-            Option Gamma
-          </div>
-          <div
-            class="dropdown-item"
-            onclick="handleDropdownClick('Option Delta')"
-          >
-            Option Delta
-          </div>
-          <div
-            class="dropdown-item"
-            onclick="handleDropdownClick('Option Epsilon')"
-          >
-            Option Epsilon
-          </div>
-          <div
-            class="dropdown-item"
-            onclick="handleDropdownClick('Option Zeta')"
-          >
-            Option Zeta
-          </div>
-        </div>
-      </div>
+              <!-- Time frame selector -->
+              <div>
+                <label for="timeFrame">Time Frame:</label>
+                <select id="timeFrame" name="timeFrame">
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
 
-      <div class="card" onclick="fetchData('News Feed')">
-        <div class="card-title">News Feed</div>
-        <div class="card-content">Click to load data</div>
-        <div class="dropdown">
-          <div class="dropdown-item" onclick="handleDropdownClick('Option P')">
-            Option P
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Option Q')">
-            Option Q
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Option R')">
-            Option R
-          </div>
-        </div>
-      </div>
+              <!-- Start and end date input fields -->
+              <div>
+                <label for="startDate">Start Date:</label>
+                <input
+                  type="text"
+                  id="startDate"
+                  name="startDate"
+                  placeholder="YYYY-MM-DD"
+                />
+              </div>
+              <div>
+                <label for="endDate">End Date:</label>
+                <input
+                  type="text"
+                  id="endDate"
+                  name="endDate"
+                  placeholder="YYYY-MM-DD"
+                />
+              </div>
+              <label for="location">Location:</label>
+              <select id="location" name="location">
+                <option value="New York">New York</option>
+                <option value="Los Angeles">Los Angeles</option>
+                <option value="Chicago">Chicago</option>
+                <option value="Houston">Houston</option>
+                <option value="Phoenix">Phoenix</option>
+                <option value="Philadelphia">Philadelphia</option>
+                <option value="San Antonio">San Antonio</option>
+                <option value="San Diego">San Diego</option>
+                <option value="Dallas">Dallas</option>
+                <option value="San Jose">San Jose</option>
+                <option value="Austin">Austin</option>
+                <option value="Jacksonville">Jacksonville</option>
+                <option value="San Francisco">San Francisco</option>
+                <option value="Columbus">Columbus</option>
+                <option value="Indianapolis">Indianapolis</option>
+                <option value="Fort Worth">Fort Worth</option>
+                <option value="Charlotte">Charlotte</option>
+                <option value="Seattle">Seattle</option>
+                <option value="Denver">Denver</option>
+                <option value="Washington">Washington, D.C.</option>
+                <option value="Boston">Boston</option>
+                <option value="El Paso">El Paso</option>
+                <option value="Nashville">Nashville</option>
+                <option value="Detroit">Detroit</option>
+                <option value="Oklahoma City">Oklahoma City</option>
+                <option value="Portland">Portland</option>
+                <option value="Las Vegas">Las Vegas</option>
+                <option value="Memphis">Memphis</option>
+                <option value="Louisville">Louisville</option>
+                <option value="Milwaukee">Milwaukee</option>
+                <option value="Baltimore">Baltimore</option>
+                <option value="Raleigh">Raleigh</option>
+                <option value="Miami">Miami</option>
+                <option value="Minneapolis">Minneapolis</option>
+                <option value="Tampa">Tampa</option>
+                <option value="Orlando">Orlando</option>
+                <option value="Sacramento">Sacramento</option>
+                <option value="Pittsburgh">Pittsburgh</option>
+                <option value="New Orleans">New Orleans</option>
+                <option value="Cleveland">Cleveland</option>
+                <option value="Kansas City">Kansas City</option>
+                <option value="Las Vegas">Las Vegas</option>
+                <option value="San Antonio">San Antonio</option>
+                <!-- Thinking on adding more locations -->
+              </select>
 
-      <div class="card" onclick="fetchData('Stock Market')">
-        <div class="card-title">Stock Market</div>
-        <div class="card-content">Click to load data</div>
-        <div class="dropdown">
-          <div class="dropdown-item" onclick="handleDropdownClick('Option M')">
-            Option M
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Option N')">
-            Option N
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Option O')">
-            Option O
+              <!-- Submit button -->
+              <div>
+                <button type="button" onclick="applyWeatherSettings()">
+                  show Plot
+                </button>
+                <button type="button" onclick="applyWeatherSettings2()">
+                  show Animation
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
+      <!-- pop up for the weather -->
 
-      <div class="card" onclick="fetchData('Travel Planner')">
-        <div class="card-title">Travel Planner</div>
-        <div class="card-content">Click to load data</div>
-        <div class="dropdown">
-          <div class="dropdown-item" onclick="handleDropdownClick('Option T')">
-            Option T
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Option U')">
-            Option U
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Option V')">
-            Option V
-          </div>
+      <!-- added new one here -->
+      <div id="choiceModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeChoiceModal()">&times;</span>
+          <h2>Choose Your Display Option</h2>
+          <button onclick="showPlot(globalFetchedData)">Show Plot</button>
+          <button onclick="showAnimation(globalFetchedData)">
+            Show Animation
+          </button>
         </div>
       </div>
-      <div class="card" onclick="fetchData('FX Trader')">
-        <div class="card-title">FX Trader</div>
-        <div class="card-content">Click to load data</div>
-        <div class="dropdown">
-          <div class="dropdown-item" onclick="handleDropdownClick('Option 1')">
-            Option 1
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Option 2')">
-            Option 2
-          </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Option 3')">
-            Option 3
-          </div>
-        </div>
-      </div>
+      <!-- Added new one here -->
 
-      <div class="card" onclick="fetchData('FX Trader')">
-        <div class="card-title">FX Trader</div>
-        <div class="card-content">Click to load data</div>
-        <div class="dropdown">
-          <div class="dropdown-item" onclick="handleDropdownClick('Option 1')">
-            Option 1
+      <div class="below">
+        <div class="card" onclick="openModal()">
+          <div class="card-title">FX Trader</div>
+          <div class="card-content">
+            Click to load data
+            <p>
+              Due to reasons beyond the service's control, the app can only
+              display daily and hourly time frames, and the time span should not
+              go beyond 2 months ago.
+            </p>
           </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Option 2')">
-            Option 2
+        </div>
+
+        <div class="card" onclick="openWeatherPopup()">
+          <div class="card-title">Weather</div>
+          <div class="card-content weather-card">
+            Click to load data
+
+            <p>
+              Please note the service has 1000 API calls max, each API call
+              requires over 300 queries. We kindly request that you keep your
+              date range at 10 days max.
+            </p>
           </div>
-          <div class="dropdown-item" onclick="handleDropdownClick('Option 3')">
-            Option 3
+        </div>
+
+        <div class="card" onclick="showPopup('Random Service')">
+          <div class="card-title">Random Service</div>
+          <div class="card-content">
+            Click to load data
+            <p>
+              To view plots and animations, please input your data. You can only
+              input one value at a time, and the value should be an integer.
+            </p>
           </div>
+        </div>
+        <!-- Main Popup Container -->
+        <div class="popup" id="popup">
+          <div class="popup-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <h2>Select an Option: you can only enter integer values</h2>
+            <ul>
+              <li>
+                <a href="#" onclick="showForm('money_spending')"
+                  >Money Spending</a
+                >
+              </li>
+              <li><a href="#" onclick="showForm('weight')">Weight</a></li>
+              <li>
+                <a href="#" onclick="showForm('calorie_intake')"
+                  >Calorie Intake</a
+                >
+              </li>
+              <li>
+                <a href="#" onclick="showForm('blood_pressure')"
+                  >Blood Pressure</a
+                >
+              </li>
+              <li><a href="#" onclick="showForm('exercise')">Exercise</a></li>
+              <li><a href="#" onclick="showForm('sleep')">Sleep</a></li>
+              <li><a href="#" onclick="showForm('steps')">Steps</a></li>
+              <li>
+                <a href="#" onclick="showForm('water_intake')">Water Intake</a>
+              </li>
+              <li>
+                <a href="#" onclick="showForm('medication')">Medication</a>
+              </li>
+              <li>
+                <a href="#" onclick="showForm('heart_rate')">Heart Rate</a>
+              </li>
+              <li>
+                <a href="#" onclick="showForm('blood_sugar')">Blood Sugar</a>
+              </li>
+              <li><a href="#" onclick="showForm('expenses')">Expenses</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="form-popup" id="form-popup">
+          <!-- Forms for different options will be dynamically added here -->
+        </div>
+        <div class="chart-popup" id="chart-popup">
+          <!-- Chart will be displayed here -->
+          <span class="close" onclick="closeChartPopup()">&times;</span>
+          <canvas id="myChart"></canvas>
         </div>
       </div>
     </main>
     <script>
-      async function fetchData(serviceName) {
+      //Global variable to store fetched data
+      let globalFetchedData = null;
+      // Global variable to store the chart reference
+      var myChart;
+
+      // Function to open the modal
+      function openModal() {
+        document.getElementById("myModal").style.display = "block";
+      }
+
+      // Function to close the modal
+      function closeModal() {
+        document.getElementById("myModal").style.display = "none";
+      }
+
+      //Clear the form so it can be used next time
+      function clearForm() {
+        // Clear the form fields by setting their values to an empty string
+        document.getElementById("startDate").value = "";
+        document.getElementById("endDate").value = "";
+        document.getElementById("frame").value = "";
+      }
+
+      async function fetchData(currency, startDate, endDate, frame) {
         try {
           const response = await fetch(
-            "http://localhost:5000/call_python_function",
+            "http://localhost:6002/fetch_forex_data",
             {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ apiInput: serviceName }),
+              body: JSON.stringify({
+                startDate: startDate,
+                endDate: endDate,
+                frame: frame,
+                currency: currency,
+              }),
             }
           );
 
           const data = await response.json();
-          alert(`Result: ${JSON.stringify(data.result)}`);
+          if (response.ok) {
+            globalFetchedData = JSON.parse(data.result);
+            openChoiceModal(); //opening the modal
+            return JSON.parse(data.result); // Parsing the JSON string to an object
+          } else {
+            throw new Error(data.error || "Unknown error");
+          }
         } catch (error) {
           console.error("Error fetching data:", error);
         }
       }
 
-      function handleDropdownClick(option) {
-        alert("fetching data now...");
-        fetchData(option);
+      // Function to submit the form inside the modal
+      function submitForm() {
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        const frame = document.getElementById("frame").value;
+        const currency = document.getElementById("currency").value;
+        console.log(currency, startDate, endDate, frame);
+        fetchData(currency, startDate, endDate, frame);
+        clearForm();
+        closeModal();
+      }
+
+      function handleDropdownClick() {
+        openModal();
+      }
+
+      // Function to open the choice modal
+      function openChoiceModal() {
+        document.getElementById("choiceModal").style.display = "block";
+        document
+          .querySelectorAll(".below")
+          .forEach((elem) => elem.classList.add("display-blur"));
+      }
+
+      // Function to close the choice modal
+      function closeChoiceModal() {
+        document.getElementById("choiceModal").style.display = "none";
+        document
+          .querySelectorAll(".below")
+          .forEach((elem) => elem.classList.remove("display-blur"));
+      }
+
+      async function showPlot(data) {
+        console.log("Sending data for plotting");
+        try {
+          const response = await fetch("http://localhost:6002/plot_data", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (response.ok) {
+            const plotResult = await response.json(); // Parse the JSON response
+            res = plotResult.data;
+
+            // Extract data from the JSON response
+            const dates = res.date;
+            const openPrices = res.open;
+            const highPrices = res.high;
+            const lowPrices = res.low;
+            const closePrices = res.close;
+
+            // Create a Chart.js chart
+            var ctx = document.getElementById("myChart").getContext("2d");
+
+            if (myChart) {
+              myChart.destroy(); // Destroy the existing chart if it exists
+            }
+            myChart = new Chart(ctx, {
+              type: "line",
+              data: {
+                labels: dates,
+                datasets: [
+                  {
+                    label: "Open",
+                    data: openPrices,
+                    borderColor: "rgba(255, 99, 132, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "High",
+                    data: highPrices,
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "Low",
+                    data: lowPrices,
+                    borderColor: "rgba(255, 206, 86, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "Close",
+                    data: closePrices,
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+              },
+            });
+
+            console.log("Chart created successfully");
+          } else {
+            throw new Error("Error in plotting data");
+          }
+        } catch (error) {
+          console.error("Error sending data for plot:", error);
+        }
+        closeChoiceModal();
+      }
+
+      //showAnimation function
+      async function showAnimation(data) {
+        console.log("Sending data for animation");
+        try {
+          //rebuild the canvas for animation
+
+          const response = await fetch("http://localhost:6002/plot_data", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (response.ok) {
+            const res = await response.json();
+            const res2 = res.data;
+            // Extract data from the JSON response
+            const dates = res2.date;
+            const openPrices = res2.open;
+            const highPrices = res2.high;
+            const lowPrices = res2.low;
+            const closePrices = res2.close;
+            // Create a Chart.js chart
+            var ctx = document.getElementById("myChart").getContext("2d");
+
+            //functions for handling the animations
+
+            const totalDuration = 10000;
+            const delayBetweenPoints = totalDuration / data.length;
+            const previousY = (ctx) =>
+              ctx.index === 0
+                ? ctx.chart.scales.y.getPixelForValue(100)
+                : ctx.chart
+                    .getDatasetMeta(ctx.datasetIndex)
+                    .data[ctx.index - 1].getProps(["y"], true).y;
+            const animation = {
+              x: {
+                type: "number",
+                easing: "linear",
+                duration: delayBetweenPoints,
+                from: NaN, // the point is initially skipped
+                delay(ctx) {
+                  if (ctx.type !== "data" || ctx.xStarted) {
+                    return 0;
+                  }
+                  ctx.xStarted = true;
+                  return ctx.index * delayBetweenPoints;
+                },
+              },
+              y: {
+                type: "number",
+                easing: "linear",
+                duration: delayBetweenPoints,
+                from: previousY,
+                delay(ctx) {
+                  if (ctx.type !== "data" || ctx.yStarted) {
+                    return 0;
+                  }
+                  ctx.yStarted = true;
+                  return ctx.index * delayBetweenPoints;
+                },
+              },
+            };
+
+            if (myChart) {
+              myChart.destroy(); // Destroy the existing chart if it exists
+            }
+            myChart = new Chart(ctx, {
+              type: "line",
+              data: {
+                labels: dates,
+                datasets: [
+                  {
+                    label: "Open",
+                    data: openPrices,
+                    borderColor: "rgba(255, 99, 132, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "High",
+                    data: highPrices,
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "Low",
+                    data: lowPrices,
+                    borderColor: "rgba(255, 206, 86, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "Close",
+                    data: closePrices,
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                ],
+              },
+              options: {
+                animation,
+                responsive: true,
+                maintainAspectRatio: false,
+                animations: {
+                  plugins: {
+                    legend: false,
+                  },
+                  scales: {
+                    x: {
+                      type: "linear",
+                    },
+                  },
+                },
+              },
+            });
+          } else {
+            throw new Error("Error in animating data");
+          }
+        } catch (error) {
+          console.error("Error sending data for animation:", error);
+        }
+        closeChoiceModal();
+      }
+
+      //showAnimation ends here
+
+      // Function to open the weather pop-up
+      function openWeatherPopup() {
+        const popupOverlay = document.getElementById("popupOverlay");
+        const popup = document.getElementById("weatherPopup");
+        popupOverlay.style.display = "block";
+        popup.style.display = "block";
+      }
+
+      // Function to close the weather pop-up
+      function closeWeatherPopup() {
+        const popupOverlay = document.getElementById("popupOverlay");
+        const popup = document.getElementById("weatherPopup");
+        popupOverlay.style.display = "none";
+        popup.style.display = "none";
+      }
+
+      // Function to apply weather settings (and close the pop-up)
+      function applyWeatherSettings() {
+        // Get the form data
+        const form = document.getElementById("weatherForm");
+        const formData = new FormData(form);
+
+        // Retrieve the selected settings
+        const selectedWeatherElements = Array.from(
+          formData.getAll("weatherElement")
+        );
+        const timeFrame = formData.get("timeFrame");
+        const startDate = formData.get("startDate");
+        const endDate = formData.get("endDate");
+        const selectedLocation = formData.get("location");
+
+        // Create an object to send to the Flask route
+        const requestData = {
+          location: selectedLocation,
+          weatherElements: selectedWeatherElements,
+          timeFrame: timeFrame,
+          startDate: startDate,
+          endDate: endDate,
+        };
+
+        fetch("http://localhost:6002/get_weather_data", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
+        })
+          .then((response) => response.json())
+          .then((weatherData) => {
+            // Process the weather data,
+            console.log("Weather Data:", weatherData);
+            // Access conditions over the days and selected weather elements
+            const daysData = weatherData.days; // Array of day objects
+
+            const humidity = [];
+            const pressure = [];
+            const temp = [];
+            const windspeed = [];
+            const cloudcover = [];
+            const precip = [];
+
+            // Function to extract and organize weather elements into arrays over time
+            function extractWeatherElements(data, d1, d2, d3, d4, d5, d6) {
+              d1.push(data.humidity);
+              d2.push(data.pressure / 100);
+              d3.push(data.temp);
+              d4.push(data.windspeed);
+              d5.push(data.cloudcover);
+              d6.push(data.precip);
+            }
+
+            //loop through all the days
+            for (i = 0; i < daysData.length; i++) {
+              let hours = daysData[i].hours;
+              //loop through all the hours in a day
+              for (j = 0; j < hours.length; j++) {
+                extractWeatherElements(
+                  hours[j],
+                  humidity,
+                  pressure,
+                  temp,
+                  windspeed,
+                  cloudcover,
+                  precip
+                );
+              }
+            }
+
+            var ctx = document.getElementById("myChart").getContext("2d");
+            if (myChart) {
+              myChart.destroy();
+            }
+            myChart = new Chart(ctx, {
+              type: "line",
+              data: {
+                labels: daysData,
+                datasets: [
+                  {
+                    label: "humidity",
+                    data: humidity,
+                    borderColor: "rgba(255, 99, 132, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "pressure divided by 100",
+                    data: pressure,
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "temperatur",
+                    data: temp,
+                    borderColor: "rgba(255, 206, 86, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "windspeed",
+                    data: windspeed,
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "cloudcover",
+                    data: cloudcover,
+                    borderColor: "rgba(55, 40, 190, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "precipitation",
+                    data: precip,
+                    borderColor: "rgba(0, 0, 255, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+              },
+            });
+          })
+          .catch((error) => {
+            console.error("Error getting weather data:", error);
+          });
+
+        // Close the pop-up
+        closeWeatherPopup();
+      }
+
+      //end of apply weather settings one
+
+      // Function to apply weather settings (and close the pop-up)
+      function applyWeatherSettings2() {
+        // Get the form data
+        const form = document.getElementById("weatherForm");
+        const formData = new FormData(form);
+
+        // Retrieve the selected settings
+        const selectedWeatherElements = Array.from(
+          formData.getAll("weatherElement")
+        );
+        const timeFrame = formData.get("timeFrame");
+        const startDate = formData.get("startDate");
+        const endDate = formData.get("endDate");
+        const selectedLocation = formData.get("location");
+
+        // Create an object to send to the Flask route
+        const requestData = {
+          location: selectedLocation,
+          weatherElements: selectedWeatherElements,
+          timeFrame: timeFrame,
+          startDate: startDate,
+          endDate: endDate,
+        };
+
+        fetch("http://localhost:6002/get_weather_data", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
+        })
+          .then((response) => response.json())
+          .then((weatherData) => {
+            const daysData = weatherData.days; // Array of day objects
+
+            const humidity = [];
+            const pressure = [];
+            const temp = [];
+            const windspeed = [];
+            const cloudcover = [];
+            const precip = [];
+
+            // Function to extract and organize weather elements into arrays over time
+            function extractWeatherElements(data, d1, d2, d3, d4, d5, d6) {
+              d1.push(data.humidity);
+              d2.push(data.pressure / 100);
+              d3.push(data.temp);
+              d4.push(data.windspeed);
+              d5.push(data.cloudcover);
+              d6.push(data.precip);
+            }
+
+            //Now loop through all the days
+            for (i = 0; i < daysData.length; i++) {
+              let hours = daysData[i].hours;
+              //loop through all the hours in a day
+              for (j = 0; j < hours.length; j++) {
+                extractWeatherElements(
+                  hours[j],
+                  humidity,
+                  pressure,
+                  temp,
+                  windspeed,
+                  cloudcover,
+                  precip
+                );
+              }
+            }
+            var ctx = document.getElementById("myChart").getContext("2d");
+
+            const totalDuration = 100000;
+            const delayBetweenPoints = totalDuration / humidity.length;
+            const previousY = (ctx) =>
+              ctx.index === 0
+                ? ctx.chart.scales.y.getPixelForValue(100)
+                : ctx.chart
+                    .getDatasetMeta(ctx.datasetIndex)
+                    .data[ctx.index - 1].getProps(["y"], true).y;
+
+            const animation = {
+              x: {
+                type: "number",
+                easing: "linear",
+                duration: delayBetweenPoints,
+                from: NaN, // the point is initially skipped
+                delay(ctx) {
+                  if (ctx.type !== "data" || ctx.xStarted) {
+                    return 0;
+                  }
+                  ctx.xStarted = true;
+                  return ctx.index * delayBetweenPoints;
+                },
+              },
+              y: {
+                type: "number",
+                easing: "linear",
+                duration: delayBetweenPoints,
+                from: previousY,
+                delay(ctx) {
+                  if (ctx.type !== "data" || ctx.yStarted) {
+                    return 0;
+                  }
+                  ctx.yStarted = true;
+                  return ctx.index * delayBetweenPoints;
+                },
+              },
+            };
+            if (myChart) {
+              myChart.destroy(); // Destroy the existing chart if it exists
+            }
+            myChart = new Chart(ctx, {
+              type: "line",
+              data: {
+                labels: daysData,
+                datasets: [
+                  {
+                    label: "humidity",
+                    data: humidity,
+                    borderColor: "rgba(255, 99, 132, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "temp",
+                    data: temp,
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "windspeed",
+                    data: windspeed,
+                    borderColor: "rgba(255, 206, 86, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "cloudcover",
+                    data: cloudcover,
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "precipitation",
+                    data: precip,
+                    borderColor: "rgba(0, 1, 192,1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                  {
+                    label: "pressure(divided by 100)",
+                    data: pressure,
+                    borderColor: "rgba(87, 19, 133, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                ],
+              },
+              options: {
+                animation,
+                responsive: true,
+                maintainAspectRatio: false,
+                animations: {
+                  plugins: {
+                    legend: false,
+                  },
+                  scales: {
+                    x: {
+                      type: "linear",
+                    },
+                  },
+                },
+              },
+            });
+          })
+          .catch((error) => {
+            console.error("Error getting weather data:", error);
+          });
+
+        // Close the pop-up
+        closeWeatherPopup();
+      }
+
+      // Function to show the main popup
+      function showPopup(serviceName) {
+        const popup = document.getElementById("popup");
+        popup.style.display = "block";
+      }
+
+      // Function to close the main popup
+      function closePopup() {
+        const popup = document.getElementById("popup");
+        popup.style.display = "none";
+
+        const formPopup = document.getElementById("form-popup");
+        formPopup.innerHTML = "";
+      }
+      // Function to show the form for a selected option
+      function showForm(option) {
+        const formPopup = document.getElementById("form-popup");
+        formPopup.style.display = "block";
+        formPopup.innerHTML = `
+              <div class="form">
+                  <span class="close" onclick="closeForm()">&times;</span>
+                  <h2>${option}</h2>
+                  <form id="${option}-form" onsubmit="submitFormData('${option}'); return false;">
+                      <input type="text" id="${option}-data" placeholder="Enter today's progress" required>
+                      <button type="submit">Submit</button>
+                  </form>
+                  <div class="options">
+                      <button onclick="showPersonalPlot('${option}')">Show Plot</button>
+                      <button onclick="showPersonalAnimation('${option}')">Show Animation</button>
+                  </div>
+              </div>
+          `;
+      }
+      // Function to close the form popup
+      function closeForm() {
+        const formPopup = document.getElementById("form-popup");
+        formPopup.innerHTML = "";
+      }
+      // Function to submit data for a selected option
+      function submitFormData(option) {
+        const data = document.getElementById(`${option}-data`).value;
+
+        fetch("http://localhost:6002/store_data", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ option, data }),
+        })
+          .then((response) => response.json())
+          .then((result) => {
+            console.log(result);
+          })
+          .catch((error) => {
+            console.error("Error submitting data:", error);
+          });
+
+        closeForm();
+      }
+      // Function to show the plot for a selected option
+      function showPersonalPlot(option) {
+        fetch("http://localhost:6002/get_plot_data", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ option }),
+        })
+          .then((response) => response.json())
+          .then((plotData) => {
+            const dates = plotData.dates;
+            const progressData = plotData.progressData;
+            console.log(dates, progressData);
+
+            var ctx = document.getElementById("myChart").getContext("2d");
+            if (myChart) {
+              myChart.destroy(); // Destroy the existing chart if it exists
+            }
+            myChart = new Chart(ctx, {
+              type: "line",
+              data: {
+                labels: dates,
+                datasets: [
+                  {
+                    label: option,
+                    data: progressData,
+                    borderColor: "rgba(255, 99, 132, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+              },
+            });
+
+            // Display the chart popup
+            const chartPopup = document.getElementById("chart-popup");
+            chartPopup.style.display = "block";
+          })
+          .catch((error) => {
+            console.error("Error fetching plot data:", error);
+          });
+      }
+
+      // Function to show the plot for a selected option
+      function showPersonalAnimation(option) {
+        fetch("http://localhost:6002/get_plot_data", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ option }),
+        })
+          .then((response) => response.json())
+          .then((plotData) => {
+            const dates = plotData.dates;
+            const progressData = plotData.progressData;
+            console.log(dates, progressData);
+
+            var ctx = document.getElementById("myChart").getContext("2d");
+
+            //functions for handling the animations
+
+            const totalDuration = 10000;
+            const delayBetweenPoints = totalDuration / dates.length;
+            const previousY = (ctx) =>
+              ctx.index === 0
+                ? ctx.chart.scales.y.getPixelForValue(100)
+                : ctx.chart
+                    .getDatasetMeta(ctx.datasetIndex)
+                    .data[ctx.index - 1].getProps(["y"], true).y;
+            const animation = {
+              x: {
+                type: "number",
+                easing: "linear",
+                duration: delayBetweenPoints,
+                from: NaN, // the point is initially skipped
+                delay(ctx) {
+                  if (ctx.type !== "data" || ctx.xStarted) {
+                    return 0;
+                  }
+                  ctx.xStarted = true;
+                  return ctx.index * delayBetweenPoints;
+                },
+              },
+              y: {
+                type: "number",
+                easing: "linear",
+                duration: delayBetweenPoints,
+                from: previousY,
+                delay(ctx) {
+                  if (ctx.type !== "data" || ctx.yStarted) {
+                    return 0;
+                  }
+                  ctx.yStarted = true;
+                  return ctx.index * delayBetweenPoints;
+                },
+              },
+            };
+            if (myChart) {
+              myChart.destroy(); // Destroy the existing chart if it exists
+            }
+            myChart = new Chart(ctx, {
+              type: "line",
+              data: {
+                labels: dates,
+                datasets: [
+                  {
+                    label: option,
+                    data: progressData,
+                    borderColor: "rgba(255, 99, 132, 1)",
+                    borderWidth: 1,
+                    fill: false,
+                  },
+                ],
+              },
+              options: {
+                animation,
+                responsive: true,
+                maintainAspectRatio: false,
+              },
+            });
+
+            // Display the chart popup
+            const chartPopup = document.getElementById("chart-popup");
+            chartPopup.style.display = "block";
+          })
+          .catch((error) => {
+            console.error("Error fetching plot data:", error);
+          });
+      }
+
+      // Function to close the chart popup
+      function closeChartPopup() {
+        const chartPopup = document.getElementById("chart-popup");
+        chartPopup.style.display = "none";
       }
     </script>
   </body>

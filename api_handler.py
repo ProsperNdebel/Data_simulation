@@ -1,8 +1,9 @@
 import requests
 from datetime import datetime, timedelta
+import tradermade as tm
 
 
-def fetch_forex_data(api_key, base_currency, target_currency, start_date, end_date):
+def fetch_forex_data(base_currency, target_currency=None, start_date=None, end_date=None, interval=None):
     """
     Fetch Forex data from a specified API.
 
@@ -18,38 +19,26 @@ def fetch_forex_data(api_key, base_currency, target_currency, start_date, end_da
               and the value is a list of values of how the data has varied
     """
 
-    api_url = 'YOUR_FOREX_API_URL'
+    API_URL = 'https://marketdata.tradermade.com/api/v1/timeseries?start_date=2015-01-01&end_date=2015-05-01&api_key=Q06DBW2VTPvO_ZVTMR0W'
+    api_key = '4XO4f_4tRrrimblaTwL2'
 
     # Example API request parameters
-    params = {
-        'api_key': api_key,
-        'base_currency': base_currency,
-        'target_currency': target_currency,
-        'start_date': start_date,
-        'end_date': end_date,
-    }
 
-    return None
+    tm.set_rest_api_key(api_key)
 
+    # returns live data - fields is optional
+    # data1 = tm.live(currency='EURUSD,GBPUSD', fields=["bid", "mid", "ask"])
 
-def analyze_data_variation(data, time_intervals):
-    """
-    Analyze how data has varied over time.
+    # returns historical data for the currency requested interval is daily, hourly, minute - fields is optional
+    # data2 = tm.historical(currency='EURUSD,GBPUSD', date="2021-04-22",
+    #                       interval="daily", fields=["open", "high", "low", "close"])
 
-    Parameters:
-        data (list): List of data values.
-        time_intervals (list): List of time intervals corresponding to each data point.
+    # returns timeseries data for the currency requested interval is daily, hourly, minute - fields is optional
+    data = tm.timeseries(currency=base_currency, start=start_date, end=end_date,
+                         interval=interval, fields=["open", "high", "low", "close"])
 
-    Returns:
-        dict: A dictionary containing the analysis results.
-    """
-    # Example analysis: calculate the difference between consecutive data points
-    variations = [data[i] - data[i - 1] for i in range(1, len(data))]
+    # data2 = tm.cfd_list()  # gets list of all cfds available
 
-    analysis_results = {
-        'variations': variations,
-        # Remove the first time interval (no variation for the first data point)
-        'time_intervals': time_intervals[1:],
-    }
-
-    return analysis_results
+    # gets list of all currency codes available add two codes to get code for currencypair ex EUR + USD gets EURUSD
+    # data3 = tm.currency_list()
+    return data

@@ -1,6 +1,6 @@
 async function fetchData(serviceName) {
   try {
-    const response = await fetch("http://localhost:5000/call_python_function", {
+    const response = await fetch("http://localhost:5000/fetch_forex_data", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
