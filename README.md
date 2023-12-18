@@ -29,5 +29,45 @@ The Data Simulation Project caters to a broad range of stakeholders, including:
 The project serves anyone seeking to gain insights into how data evolves over time, making it a valuable tool for both personal and professional use.
 
 
+# Prerequisites and installation instructions
+Before running the project, ensure that you have the following Python modules installed:
+
+- Flask
+- Requests
+- Flask-CORS
+- Pandas
+- Plotly
+- Trader_Made
+- Unittest
+- Datetime
+
+You can install these modules using pip3 and the following commands:
+- pip3 install flask 
+- pip3 install requests
+- pip3 install flask-cors 
+- pip3 install pandas 
+- pip3 install plotly 
+- pip3 install tradermade 
+- pip3 install unittest 
+- pip3 install datetime
+
+# How to Run the Project
+1. Clone the project from github with the command(git clone)
+2. Then make sure you are in the main directory (cd Data_simulation)
+3. Run the command python3 app.py
+4. Open a web browser(Chrome or Safari is recommended) and enter the URL displayed in the terminal to access the app
+5. On the main screen you will see an empty canvas, and clickable cards with data types at the bottom, follow the instrunctions on those cards
+6. Note the the APIs I used were free and hence they limit the number of API calls I can make to their endpoints
+
+# Proposed Future Directions and Suggestions for Additional Features
+1. **User Profiles**: Implement user profiles for saving preferences and viewing search history.
+2. **Geolocation**: Add geolocation services to detect the user's location automatically.
+3. **Weather Alerts**: Provide real-time weather alerts and notifications.
+4. **Weather Maps**: Integrate interactive weather maps.
+5. **Multi-Language Support**: Add support for multiple languages.
+6. **Weather Widgets**: Create customizable weather widgets.
+7. **Weather Data Sources**: Allow users to choose data sources.
+
+
 
 
